@@ -32,7 +32,7 @@ def generate_refresh_token(data) -> bytes:
     if not data:
         return b''
 
-    data['exp'] = datetime.utcnow() + timedelta(minutes=10)
+    data['exp'] = datetime.utcnow() + timedelta(minutes=1)
     token = jwt.encode(data, 'refresh_secret')
 
     return token
@@ -56,7 +56,7 @@ def auth_middleware(f):
             return f(decoded, *args, **kwargs)
 
         except jwt.exceptions.ExpiredSignatureError:
-            return make_response('Expired Token', 403)
+            return make_response({'error':'Expired Token'}, 403)
 
         except BaseException:
             return make_response('Token Invalid', 400)
