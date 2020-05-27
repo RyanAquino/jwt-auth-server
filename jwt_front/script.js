@@ -1,6 +1,10 @@
-let token = '';
+// let token = '';
 
-(async function(){
+let token = {
+	'exp': 1590564169
+};
+
+async function refresh(){
 
 	let resp = await fetch('http://127.0.0.1:5000/refresh-token',{
 		method: 'POST',
@@ -13,7 +17,9 @@ let token = '';
 		token = resp.token;
 	}
 
-})();
+};
+
+refresh();
 
 async function login(e){
 	e.preventDefault();
@@ -53,6 +59,17 @@ async function login(e){
 }
 
 async function func(){
+
+	// decode token and check if expired
+	// if expired: POST to refresh-token
+	// let token = {
+	// 	'id': 2,
+	// 	'exp': 1590564169
+	// };
+
+	// if(Date.now() >= token.exp* 1000){
+	// 	refresh();
+	// }
 
 	if(token){
 		let resp = await fetch('http://127.0.0.1:5000/protected',{
