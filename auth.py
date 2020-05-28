@@ -98,7 +98,7 @@ def re_token() -> bytes:
     }
 
     res = make_response(payload)
-    res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, path='/refresh-token')
+    res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1', path='/refresh-token', samesite='Lax')
 
     return res
 
@@ -136,7 +136,7 @@ def login() -> dict:
     }
 
     res = make_response(payload)
-    res.set_cookie(key='refresh_token', value=payload['refresh_token'], domain='127.0.0.1', path='/refresh-token')
+    res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1', path='/refresh-token', samesite='Lax')
 
     return res
 
@@ -145,7 +145,6 @@ def login() -> dict:
 def delete_token():
     res = make_response('')
     res.delete_cookie(key='refresh_token', path='/refresh-token', domain='127.0.0.1')
-    # Does not invalidate all the past refresh token, only the current token at cookies
 
     return res
 
