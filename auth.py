@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from flask import Flask, request, make_response
 from flask_cors import CORS
 from functools import wraps
+from config import JWT_REFRESH_SECRET, JWT_SECRET
 import jwt
 import database
 import hash
@@ -16,9 +17,8 @@ def generate_token(data) -> bytes:
     if not data:
         return b''
 
-    # data should be user id not username
     data['exp'] = datetime.utcnow() + timedelta(seconds=30)
-    token = jwt.encode(data, 'secretkey')
+    token = jwt.encode(data, JWT_SECRET)
 
     return token
 
@@ -33,7 +33,7 @@ def generate_refresh_token(data) -> bytes:
         return b''
 
     data['exp'] = datetime.utcnow() + timedelta(minutes=1)
-    token = jwt.encode(data, 'refresh_secret')
+    token = jwt.encode(data, JWT_REFRESH_SECRET)
 
     return token
 
@@ -48,24 +48,26 @@ def auth_middleware(f):
             if len(auth_token) > 1:
                 auth_token = auth_token[1]
 
-        if not auth_token: return make_response('Unauthorized', 401)
+        if not auth_token:
+            return make_response({'Error': 'Unauthorized'}, 401)
 
         try:
-            decoded = jwt.decode(auth_token, 'secretkey', algorithm='HS256', options={'require_exp': True, 'verify_exp': True})
+            decoded = jwt.decode(auth_token, JWT_SECRET, algorithm='HS256', options={'require_exp': True, 'verify_exp': True})
 
             return f(decoded, *args, **kwargs)
 
         except jwt.exceptions.ExpiredSignatureError:
-            return make_response({'error':'Expired Token'}, 403)
+            return make_response({'Error': 'Expired Token'}, 403)
 
         except BaseException:
-            return make_response('Token Invalid', 400)
+            return make_response({'Error': 'Token Invalid'}, 400)
 
     return decorator
 
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
+
 
 @app.route('/refresh-token', methods=['POST'])
 def re_token() -> bytes:
@@ -75,22 +77,23 @@ def re_token() -> bytes:
     :return: token
     """
     if 'refresh_token' not in request.cookies:
-        return make_response('Unauthorized', 401)
+        return make_response({'Error': 'Unauthorized'}, 401)
 
     cookie_token = request.cookies['refresh_token']
 
     try:
-        user_data = jwt.decode(cookie_token.encode(), 'refresh_secret', algorithm='HS256')
-    except BaseException:
-        return make_response('Token Invalid', 400)
+        user_data = jwt.decode(cookie_token.encode(), JWT_REFRESH_SECRET, algorithm='HS256')
 
-    user = database.query_one(f'SELECT * FROM users WHERE username="{user_data["Username"]}"')
+    except BaseException:
+        return make_response({'Error': 'Token Invalid'}, 400)
+
+    user = database.query_one(f'SELECT * FROM users WHERE id="{user_data["id"]}"')
 
     if not user:
-        return make_response('Forbidden', 403)
+        return make_response({'Error': 'Forbidden'}, 403)
 
-    token = generate_token({'Username': user['username']})
-    refresh_token = generate_refresh_token({'Username': user['username']})
+    token = generate_token({'id': user['id']})
+    refresh_token = generate_refresh_token({'id': user['id']})
 
     payload = {
         'token': token.decode(),
@@ -98,7 +101,8 @@ def re_token() -> bytes:
     }
 
     res = make_response(payload)
-    res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1', path='/refresh-token', samesite='Lax')
+    res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1',
+                   path='/refresh-token', samesite='Lax')
 
     return res
 
@@ -127,8 +131,8 @@ def login() -> dict:
     if verify_password != True:
         return make_response({'Error': 'Password does not match'}, 401)
 
-    refresh_token = generate_refresh_token({'Username': query_user['username']})
-    token = generate_token({'Username': query_user['username']})
+    refresh_token = generate_refresh_token({'id': query_user['id']})
+    token = generate_token({'id': query_user['id']})
 
     payload = {
         'token': token.decode(),
@@ -136,14 +140,15 @@ def login() -> dict:
     }
 
     res = make_response(payload)
-    res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1', path='/refresh-token', samesite='Lax')
+    res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1',
+                   path='/refresh-token', samesite='Lax')
 
     return res
 
 
 @app.route('/logout', methods=['DELETE'])
 def delete_token():
-    res = make_response('')
+    res = make_response('', 204)
     res.delete_cookie(key='refresh_token', path='/refresh-token', domain='127.0.0.1')
 
     return res
@@ -151,16 +156,14 @@ def delete_token():
 
 @app.route('/protected', methods=['GET'])
 @auth_middleware
-def protected(data):
-
-    result = database.query_all(f'SELECT * FROM posts WHERE user_id=2')
-    # Change to user id
+def protected(decoded_data):
+    result = database.query_all(f'SELECT * FROM posts WHERE user_id={decoded_data["id"]}')
 
     data = [
         {
-            'id1':1,
-            'Title':'test1',
-            'Body':'Post1'
+            'id1': 1,
+            'Title': 'test1',
+            'Body': 'Post1'
         },
         {
             'id1': 2,
@@ -173,11 +176,11 @@ def protected(data):
             'Body': 'Post3'
         },
         {
-            'id': data
+            'id': decoded_data['id']
         }
     ]
 
-    return make_response({'posts': data, 'query':result}, 200)
+    return make_response({'posts': data, 'query': result}, 200)
 
 
 if __name__ == '__main__':

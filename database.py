@@ -1,5 +1,9 @@
+"""
+Custom Database Module utilizing native SQL Connector for querying data
+"""
 from mysql.connector import errorcode
 from functools import wraps
+from config import DB_HOST, DB_NAME, DB_PASS, DB_USER
 import mysql.connector
 
 
@@ -7,7 +11,7 @@ def connect_db(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         try:
-            cnn = mysql.connector.connect(user='root', password='', host='127.0.0.1', database='phprest')
+            cnn = mysql.connector.connect(user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
             rv = f(cnn, *args, **kwargs)
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
@@ -26,6 +30,13 @@ def connect_db(f):
 
 @connect_db
 def query_all(cnn, query):
+    """
+    Query bulk data
+
+    :param cnn: connection returned from decorator
+    :param query: query statement
+    :return: result from query statement
+    """
     cursor = cnn.cursor(dictionary=True)
     cursor.execute(query)
     data = []
@@ -34,27 +45,35 @@ def query_all(cnn, query):
 
     return data
 
+
 @connect_db
 def query_one(cnn, query):
+    """
+    Query the first result
+
+    :param cnn: connection returned from decorator
+    :param query: query statement
+    :return: returns single
+    """
     cursor = cnn.cursor(dictionary=True)
     cursor.execute(query)
     data = cursor.fetchone()
 
     return data
 
+
 @connect_db
 def insert(cnn, query, values):
+    """
+    Insert data into Database
+
+    :param cnn: connection returned from decorator
+    :param query: query statement
+    :param values: values to be inserted
+    :return: data inserted
+    """
     cursor = cnn.cursor(dictionary=True)
     cursor.execute(query, values)
     cnn.commit()
 
     return cursor
-
-
-# print(query_all('SELECT * FROM users'))
-# print(query_one('SELECT * FROM users where username = "test1"'))
-# data = {
-#     'username': 'test',
-#     'password': '$argon2id$v=19$m=102400,t=2,p=8$L+l4tHExPwcCxO+cRK/Viw$DjKX7ZCh34i4PcUVklijYw'
-# }
-# print(insert('INSERT INTO users (username, password) VALUES (%(username)s, %(password)s)', data))
