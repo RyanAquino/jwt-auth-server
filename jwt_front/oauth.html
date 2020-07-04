@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>OAuth</title>
+	<script src="script.js" defer></script>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<meta name="google-signin-client_id" content="81239065828-vimeqa555r7tmhut5f3erii0ukt22kti.apps.googleusercontent.com">
+</head>
+<body>
+	<div class="g-signin2" data-onsuccess="onSignIn"></div>
+	<a href="#" onclick="signOut();">Sign out</a>
+
+	<button onclick="viewData();">VIEW MY DATA</button>
+
+	<button onclick="func();">Protected Resource</button>
+</body>
+</html>
+
+<script>
+	async function onSignIn(googleUser) {
+		let profile = googleUser.getBasicProfile();
+		let id_token = googleUser.getAuthResponse().id_token;
+		console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+		console.log('Name: ' + profile.getName());
+		console.log('Image URL: ' + profile.getImageUrl());
+		console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present
+		console.log('Token: ' + id_token);
+
+		let resp = await fetch('http://127.0.0.1:5000/oauth',{
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			body: `id_token=${id_token}`
+		});	
+		resp = await resp.json();
+
+		if(!resp.Error){
+			console.log(resp);
+			localStorage.setItem('storage','login');
+		}else{
+			console.log(resp);
+		}
+
+	}
+
+	function viewData(){
+		var auth2 = gapi.auth2.getAuthInstance();
+		if (auth2.isSignedIn.get()) {
+		  var profile = auth2.currentUser.get().getBasicProfile();
+		  console.log('ID: ' + profile.getId());
+		  console.log('Full Name: ' + profile.getName());
+		  console.log('Given Name: ' + profile.getGivenName());
+		  console.log('Family Name: ' + profile.getFamilyName());
+		  console.log('Image URL: ' + profile.getImageUrl());
+		  console.log('Email: ' + profile.getEmail());
+		}else{
+			console.log('err');
+		}
+	}
+
+	function signOut() {
+	    var auth2 = gapi.auth2.getAuthInstance();
+	    auth2.signOut().then(function () {
+	      console.log('User signed out.');
+	    });
+	    auth2.disconnect();
+	  }
+</script>
