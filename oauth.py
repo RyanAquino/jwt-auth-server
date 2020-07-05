@@ -1,61 +1,41 @@
+"""
+Google OAuth Module
+"""
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from flask import Flask, request, make_response
-from flask_cors import CORS
-from auth import generate_token, generate_refresh_token
-import database
+from flask import request, make_response, Blueprint
+from helper import generate_token, generate_refresh_token, user_exist, register_user
 import time
 
-app = Flask(__name__)
-CORS(app, supports_credentials=True)
+oauth_api = Blueprint('oauth_api', __name__)
 
-
-def user_exist(google_id):
-    query_user = database.query_one(f'SELECT * FROM users WHERE id={google_id}')
-
-    if not query_user:
-        return False
-
-    return True
-
-
-def register_user(user_data):
-    database.insert('INSERT INTO users (id, email,username) VALUES (%(id)s, %(email)s, %(username)s)', user_data)
-
-    return True
-
-@app.route('/oauth', methods=['POST'])
+@oauth_api.route('/oauth', methods=['POST'])
 def oauth():
+
     try:
         token = request.form.get('id_token')
+        GOOGLE_CLIENT_ID = '81239065828-vimeqa555r7tmhut5f3erii0ukt22kti.apps.googleusercontent.com'
+        id_info = id_token.verify_oauth2_token(token, requests.Request(), GOOGLE_CLIENT_ID)
+        token_expiry = id_info['exp']
 
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), '81239065828-vimeqa555r7tmhut5f3erii0ukt22kti.apps.googleusercontent.com')
-
-        token_expiry = idinfo['exp']
-
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+        if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             return make_response({'Error': 'Wrong issuer'}, 401)
 
-        if idinfo['aud'] != '81239065828-vimeqa555r7tmhut5f3erii0ukt22kti.apps.googleusercontent.com':
+        if id_info['aud'] != GOOGLE_CLIENT_ID:
             return make_response({'Error': 'Wrong aud'}, 401)
 
         if token_expiry <= time.time():
             return make_response({'Error': 'Token expired'}, 403)
 
-        user_id = idinfo['sub']
-        email = idinfo['email']
-        username = idinfo['email'].split('@')[0]
+        user_id_token = int(id_info['sub'])
+        email = id_info['email']
+        username = id_info['email'].split('@')[0]
 
-        if user_exist(user_id):
-            user_data = {
-                'id': user_id,
-                'email': email,
-                'username': username
-            }
-            register_user(user_data)
+        if not user_exist(user_id_token):
+            register_user(user_id_token, 'google', email, username)
 
-        oauth_token = generate_token({'id': user_id})
-        oauth_refresh = generate_refresh_token({'id': user_id})
+        oauth_token = generate_token({'id': int(user_id_token)})
+        oauth_refresh = generate_refresh_token({'id': user_id_token})
 
         payload = {
             'token': oauth_token.decode(),
@@ -70,8 +50,3 @@ def oauth():
 
     except ValueError:
         return make_response('invalid token', 400)
-
-
-if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1')
-

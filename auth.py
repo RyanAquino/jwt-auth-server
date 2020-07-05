@@ -1,41 +1,12 @@
-from datetime import datetime, timedelta
+from config import JWT_REFRESH_SECRET, JWT_SECRET
+from helper import generate_token, generate_refresh_token
 from flask import Flask, request, make_response
 from flask_cors import CORS
 from functools import wraps
-from config import JWT_REFRESH_SECRET, JWT_SECRET
+from oauth import oauth_api
 import jwt
 import database
 import hash
-
-
-def generate_token(data) -> bytes:
-    """
-    Generate JWT Token
-    :param data: user data -> dict
-    :return: token
-    """
-    if not data:
-        return b''
-
-    data['exp'] = datetime.utcnow() + timedelta(seconds=30)
-    token = jwt.encode(data, JWT_SECRET)
-
-    return token
-
-
-def generate_refresh_token(data) -> bytes:
-    """
-    Generate refresh JWT Token
-    :param data: user data -> dict
-    :return: token
-    """
-    if not data:
-        return b''
-
-    data['exp'] = datetime.utcnow() + timedelta(minutes=1)
-    token = jwt.encode(data, JWT_REFRESH_SECRET)
-
-    return token
 
 
 def auth_middleware(f):
@@ -68,13 +39,15 @@ def auth_middleware(f):
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
+app.register_blueprint(oauth_api)
+
 
 @app.route('/refresh-token', methods=['POST'])
 def re_token() -> bytes:
     """
     Cookies: refresh_token
     request.json: refresh_token
-    :return: token
+    :return: res -> access token
     """
     if 'refresh_token' not in request.cookies:
         return make_response({'Error': 'Unauthorized'}, 401)
@@ -87,7 +60,7 @@ def re_token() -> bytes:
     except BaseException:
         return make_response({'Error': 'Token Invalid'}, 400)
 
-    user = database.query_one(f'SELECT * FROM users WHERE id="{user_data["id"]}"')
+    user = database.query_one(f'SELECT * FROM users WHERE id={user_data["id"]} or id_token={user_data["id"]} limit 1')
 
     if not user:
         return make_response({'Error': 'Forbidden'}, 403)

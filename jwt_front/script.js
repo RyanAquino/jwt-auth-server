@@ -1,7 +1,12 @@
 let token = '';
 
-window.addEventListener('storage', syncLogout);
 
+// events
+window.addEventListener('storage', syncLogout);
+window.addEventListener('load', refresh);
+
+
+// functions
 async function syncLogout(){
 	if(localStorage.storage === 'logout'){
 		token = ''
@@ -28,8 +33,6 @@ async function refresh(){
 		throw resp;
 	}
 }
-
-refresh();
 
 async function login(e){
 	e.preventDefault();
