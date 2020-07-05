@@ -75,7 +75,8 @@ def re_token() -> bytes:
 
     res = make_response(payload)
     res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1',
-                   path='/refresh-token', samesite='Lax')
+                   path='/refresh-token')
+    # samesite = 'Lax'
 
     return res
 
@@ -114,7 +115,8 @@ def login() -> dict:
 
     res = make_response(payload)
     res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1',
-                   path='/refresh-token', samesite='Lax')
+                   path='/refresh-token')
+    # samesite = 'Lax'
 
     return res
 

@@ -16,7 +16,7 @@ def generate_token(data) -> bytes:
     if not data:
         return b''
 
-    data['exp'] = datetime.utcnow() + timedelta(minutes=30)
+    data['exp'] = datetime.utcnow() + timedelta(seconds=30)
     token = jwt.encode(data, JWT_SECRET)
 
     return token

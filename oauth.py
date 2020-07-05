@@ -46,6 +46,8 @@ def oauth():
         res.set_cookie(key='refresh_token', value=payload['refresh_token'], httponly=True, domain='127.0.0.1',
                        path='/refresh-token')
 
+        # samesite = 'Lax' Google API 127.0.0.1 not working
+
         return res
 
     except ValueError:
