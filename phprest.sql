@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2020 at 07:36 AM
+-- Generation Time: Jul 05, 2020 at 08:17 AM
 -- Server version: 10.1.36-MariaDB
 -- PHP Version: 7.0.32
 
@@ -81,18 +81,22 @@ INSERT INTO `posts` (`id`, `user_id`, `category_id`, `title`, `body`, `author`, 
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
+  `id_token` varchar(64) DEFAULT NULL,
+  `provider` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `password` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `username`, `password`) VALUES
-(1, 'ryan@test.com', 'ryan', '$argon2id$v=19$m=102400,t=2,p=8$L+l4tHExPwcCxO+cRK/Viw$DjKX7ZCh34i4PcUVklijYw'),
-(2, 'ryan2@test.com', 'test', '$argon2id$v=19$m=102400,t=2,p=8$L+l4tHExPwcCxO+cRK/Viw$DjKX7ZCh34i4PcUVklijYw');
+INSERT INTO `users` (`id`, `id_token`, `provider`, `email`, `username`, `password`) VALUES
+(1, NULL, 'local', 'ryan@test.com', 'ryan', '$argon2id$v=19$m=102400,t=2,p=8$L+l4tHExPwcCxO+cRK/Viw$DjKX7ZCh34i4PcUVklijYw'),
+(2, NULL, 'local', 'ryan2@test.com', 'test', '$argon2id$v=19$m=102400,t=2,p=8$L+l4tHExPwcCxO+cRK/Viw$DjKX7ZCh34i4PcUVklijYw'),
+(10, '106827151556070796817', 'google', 'ryanscnd@gmail.com', 'ryanscnd', NULL),
+(11, '104540387658195673759', 'google', 'ryan_christian75@yahoo.com', 'ryan_christian75', NULL);
 
 --
 -- Indexes for dumped tables
@@ -115,7 +119,7 @@ ALTER TABLE `posts`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `username` (`username`);
+  ADD KEY `ids` (`id`,`id_token`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -137,7 +141,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
