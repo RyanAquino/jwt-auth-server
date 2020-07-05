@@ -115,6 +115,63 @@ async function logout(){
 		method: 'DELETE',
 		credentials: 'include',
 	});
+
 	token = '';
 	localStorage.setItem('storage','logout');
+
+	if(gapi.auth2.getAuthInstance().isSignedIn.get()){
+		var auth2 = gapi.auth2.getAuthInstance();
+	    auth2.signOut().then(function () {
+	      console.log('User signed out.');
+	      localStorage.setItem('storage','logout');
+	    });
+	    auth2.disconnect();
+	}
+}
+
+
+
+// Google oauth
+function viewData(){
+	var auth2 = gapi.auth2.getAuthInstance();
+	if (auth2.isSignedIn.get()) {
+	  var profile = auth2.currentUser.get().getBasicProfile();
+	  console.log('ID: ' + profile.getId());
+	  console.log('Full Name: ' + profile.getName());
+	  console.log('Given Name: ' + profile.getGivenName());
+	  console.log('Family Name: ' + profile.getFamilyName());
+	  console.log('Image URL: ' + profile.getImageUrl());
+	  console.log('Email: ' + profile.getEmail());
+	}else{
+		console.log('err');
+	}
+}
+
+async function onSignIn(googleUser) {
+	let profile = googleUser.getBasicProfile();
+	let id_token = googleUser.getAuthResponse().id_token;
+	console.log('ID: ' + profile.getId()); 
+	console.log('Name: ' + profile.getName());
+	console.log('Image URL: ' + profile.getImageUrl());
+	console.log('Email: ' + profile.getEmail());
+	console.log('Token: ' + id_token);
+
+	let resp = await fetch('http://127.0.0.1:5000/oauth',{
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		},
+		body: `id_token=${id_token}`
+	});	
+	resp = await resp.json();
+
+	if(!resp.Error){
+		console.log(resp);
+		token = resp.token;
+		localStorage.setItem('storage','login');
+	}else{
+		console.log(resp);
+	}
+
 }

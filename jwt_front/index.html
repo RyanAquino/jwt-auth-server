@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Login</title>
+	<title>Authentication</title>
 	<script src="script.js" defer></script>
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<meta name="google-signin-client_id" content="81239065828-vimeqa555r7tmhut5f3erii0ukt22kti.apps.googleusercontent.com">
 </head>
 <body>
 	<form method="POST" onsubmit="login(event);">
@@ -12,12 +14,12 @@
 		<br>
 		<label for="">Password</label>
 		<input type="password" id="password">
-		
 		<br>
-		<button type="submit">Submit</button>
+		<button type="submit">Submit</button>		
 	</form>
-	<button onclick="logout();">Logout</button>
-	<br>
-	<button onclick="func();">Click</button>
+	<div class="g-signin2" data-onsuccess="onSignIn"></div>
+	<button onclick="logout();">Log out</button>
+	<button onclick="viewData();">My Profile</button>
+	<button onclick="func();">Protected Resource</button>
 </body>
 </html>
