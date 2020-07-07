@@ -9,6 +9,7 @@ import time
 
 oauth_api = Blueprint('oauth_api', __name__)
 
+
 @oauth_api.route('/oauth', methods=['POST'])
 def oauth():
 

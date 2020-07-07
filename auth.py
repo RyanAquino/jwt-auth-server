@@ -4,6 +4,7 @@ from flask import Flask, request, make_response
 from flask_cors import CORS
 from functools import wraps
 from oauth import oauth_api
+from fboauth import fb_oauth_api
 import jwt
 import database
 import hash
@@ -40,6 +41,7 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 app.register_blueprint(oauth_api)
+app.register_blueprint(fb_oauth_api)
 
 
 @app.route('/refresh-token', methods=['POST'])
