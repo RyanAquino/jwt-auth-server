@@ -22,9 +22,8 @@
 	</style>
 </head>
 <body class="h-100">
-	<div id="fb-root"></div>
-	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v7.0&appId=696760850884330&autoLogAppEvents=1" nonce="E5RPn6rr"></script>
 	
+
 	<div class="container h-100">
 		<div class="row h-100 align-items-center justify-content-center">
 
@@ -56,9 +55,10 @@
 							<button type="submit" class="btn btn-block btn-primary mb-3">Login</button>
 						</form>
 						<div class="g-signin2" onclick="googleSignin();" data-onsuccess="onSignIn"></div>
-
+<!-- 
 						<div class="fb-login-button" data-size="large" data-button-type="continue_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false" data-width="">
-						</div>
+						</div> -->
+                		<div class="fb-login-button" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false" data-width="" scope="public_profile,email" onlogin="sendUserDetails();"></div>
 					</div>
 				</div>
 			</div>
@@ -81,5 +81,6 @@
 			
 		</div>
 	</div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </body>
 </html>
