@@ -12,7 +12,6 @@
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous" defer></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous" defer></script>
-
 	<style>
 		html {
 			height: 100%;
@@ -23,8 +22,10 @@
 	</style>
 </head>
 <body class="h-100">
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v7.0&appId=696760850884330&autoLogAppEvents=1" nonce="E5RPn6rr"></script>
+	
 	<div class="container h-100">
-		
 		<div class="row h-100 align-items-center justify-content-center">
 
 			<div class="col-4">
@@ -55,6 +56,9 @@
 							<button type="submit" class="btn btn-block btn-primary mb-3">Login</button>
 						</form>
 						<div class="g-signin2" onclick="googleSignin();" data-onsuccess="onSignIn"></div>
+
+						<div class="fb-login-button" data-size="large" data-button-type="continue_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false" data-width="">
+						</div>
 					</div>
 				</div>
 			</div>
@@ -73,6 +77,8 @@
 					</div>
 				</div>
 			</div>
+			
+			
 		</div>
 	</div>
 </body>

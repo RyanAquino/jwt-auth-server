@@ -5,7 +5,6 @@ let clicked = false;
 window.addEventListener('storage', syncLogout);
 window.addEventListener('load', refresh);
 
-
 // functions
 async function syncLogout(){
 	if(localStorage.storage === 'logout'){
