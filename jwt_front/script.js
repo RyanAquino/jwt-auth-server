@@ -150,6 +150,7 @@ async function logout(){
 
 // Google oauth
 function viewData(){
+	// function is to return Google profile data
 	var auth2 = gapi.auth2.getAuthInstance();
 	if (auth2.isSignedIn.get()) {
 	  var profile = auth2.currentUser.get().getBasicProfile();
@@ -193,6 +194,7 @@ async function onSignIn(googleUser) {
 		if(!resp.Error){
 			console.log(resp);
 			token = resp.token;
+			viewSuccess();
 			localStorage.setItem('storage','login');
 		}else{
 			console.log(resp);
@@ -234,6 +236,7 @@ function sendUserDetails() {
 			if(!resp.Error){
 				console.log(resp);
 				token = resp.token;
+				viewSuccess();
 				localStorage.setItem('storage','login');
 			}else{
 				console.log(resp);
@@ -249,6 +252,9 @@ function displayResource(data){
 	const ul = document.createElement('ul');
 	const list = document.createElement('li');
 
+
+	ul.classList.add('list-group');
+
 	divResource.appendChild(ul);
 	ul.appendChild(list);
 
@@ -256,7 +262,7 @@ function displayResource(data){
 	view = ``;
 
 	let posts = data.map((obj) => {
-		view += `<li>
+		view += `<li class="list-group-item">
 			<h3>${obj.Title}</h3>
 			<p>${obj.Body}</p>
 		</li>`

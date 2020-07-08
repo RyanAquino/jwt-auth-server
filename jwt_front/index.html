@@ -2,16 +2,24 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="Author" content="Ryan Aquino">
+	<meta name="Description" content="JWT OAuth Server">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>App Name</title>
+	<!-- custom -->
 	<script src="script.js" defer></script>
+
+	<!-- google oauth -->
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 	<meta name="google-signin-client_id" content="81239065828-vimeqa555r7tmhut5f3erii0ukt22kti.apps.googleusercontent.com">
-
+	
+	<!-- Bootstrap 4 / Query / Popper -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous" defer></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous" defer></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous" defer></script>
+
+	<!-- custom styles -->
 	<style>
 		html {
 			height: 100%;
@@ -24,7 +32,7 @@
 <body class="h-100">
 	
 
-	<div class="container h-100">
+	<div class="container-fluid h-100">
 		<div class="row h-100 align-items-center justify-content-center">
 
 			<div class="col-4">
@@ -55,9 +63,6 @@
 							<button type="submit" class="btn btn-block btn-primary mb-3">Login</button>
 						</form>
 						<div class="g-signin2" onclick="googleSignin();" data-onsuccess="onSignIn"></div>
-<!-- 
-						<div class="fb-login-button" data-size="large" data-button-type="continue_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false" data-width="">
-						</div> -->
                 		<div class="fb-login-button" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false" data-width="" scope="public_profile,email" onlogin="sendUserDetails();"></div>
 					</div>
 				</div>
@@ -68,9 +73,6 @@
 					<div class="card-body">
 						<h3>Actions</h3>
 						<button class='btn btn-secondary mb-3' onclick="logout();">Log out</button>
-						<br>
-						<button class='btn btn-secondary mb-3' onclick="viewData();">My Google Profile</button>
-						<br>
 						<button class='btn btn-secondary mb-3' onclick="func();">Protected Resource</button>
 						<div id="protected-resource">
 						</div>
