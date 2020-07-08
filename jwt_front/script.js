@@ -250,25 +250,19 @@ function sendUserDetails() {
 function displayResource(data){
 	const divResource = document.querySelector('#protected-resource');
 	const ul = document.createElement('ul');
-	const list = document.createElement('li');
-
-
 	ul.classList.add('list-group');
 
 	divResource.appendChild(ul);
-	ul.appendChild(list);
 
 	data = data.posts;
-	view = ``;
-
-	let posts = data.map((obj) => {
+	let view = ``;
+	data.map((obj) => {
 		view += `<li class="list-group-item">
 			<h3>${obj.Title}</h3>
 			<p>${obj.Body}</p>
 		</li>`
 	});
-
-	list.innerHTML = view;
+	ul.innerHTML = view;
 }
 
 function notAuthorize(){

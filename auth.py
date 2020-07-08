@@ -153,6 +153,8 @@ def protected(decoded_data):
             'Body': 'Post3'
         },
         {
+            'Title': 'title',
+            'Body': 'content',
             'id': decoded_data['id']
         }
     ]

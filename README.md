@@ -4,7 +4,6 @@ Token Authentication Server that utilizes JWT with Google/Facebook OAuth built o
 ### Technology
 * Python 
 * Flask
-* MySQL Connector
 * HTML
 * CSS
 * JavaScript
@@ -15,7 +14,10 @@ Token Authentication Server that utilizes JWT with Google/Facebook OAuth built o
 1. Set **MySQL database info** and **JWT token secrets** on `config.py`
 2. Install required packages `pip install requirements.txt`
 3. run Backend Server: ```python auth.py```
-4. run Frontend: ``` python -m http.server```
+4. run Frontend Server: \
+1.Navigate to `/jwt_front` directory\
+2.run ``` python server.py```
+5. Access on web browser: `https://localhost:80`
 
 ### Libraries Used
 * JWT
